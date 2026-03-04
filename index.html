@@ -1972,7 +1972,11 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     const regs = await navigator.serviceWorker.getRegistrations();
     for (let r of regs) await r.unregister();
-    navigator.serviceWorker.register('./service-worker.js').catch(e => console.log(e));
+    if (window.caches && caches.keys) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    }
+    navigator.serviceWorker.register('./service-worker.js?v=3').catch(e => console.log(e));
   });
 }
 window.addEventListener('online', () => { setSyncStatus('ok'); flushSyncQueue(); toast(T('Back online — syncing','Terug aanlyn — sinkroniseer'), 'ok'); });

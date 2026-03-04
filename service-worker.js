@@ -1,5 +1,5 @@
-﻿// Agape Kids - Service Worker v2
-const CACHE_NAME = 'agape-kids-v2';
+// Agape Kids - Service Worker v3
+const CACHE_NAME = 'agape-kids-v3';
 const OFFLINE_FALLBACK_URL = new URL("./index.html", self.location.href).toString();
 
 self.addEventListener('install', event => {
@@ -22,15 +22,23 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.url.includes('script.google.com')) return;
   if (event.request.url.includes('googleapis.com')) return;
+
+  const isNav = event.request.mode === 'navigate';
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(res => {
-        if (!res || res.status !== 200) return res;
-        const clone = res.clone();
-        caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
-        return res;
-      }).catch(() => caches.match(OFFLINE_FALLBACK_URL));
+    (isNav ? fetch(event.request) : Promise.reject()).then(res => {
+      const clone = res.clone();
+      caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+      return res;
+    }).catch(() => {
+      return caches.match(event.request).then(cached => {
+        if (cached) return cached;
+        return fetch(event.request).then(res => {
+          if (!res || res.status !== 200) return res;
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+          return res;
+        }).catch(() => caches.match(OFFLINE_FALLBACK_URL));
+      });
     })
   );
 });
