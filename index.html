@@ -203,6 +203,7 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
 .toast.ok{background:linear-gradient(135deg,var(--green-d),var(--green))}
 .toast.warn{background:linear-gradient(135deg,var(--orange-d),var(--orange))}
 .toast.err{background:linear-gradient(135deg,#C53030,#E53E3E)}
+.debug-banner{position:fixed;top:0;left:0;right:0;z-index:1000;background:#b91c1c;color:#fff;padding:8px 10px;font-size:11px;font-weight:700;display:none}
 
 /* ── SECTION TITLE ── */
 .stitle{font-family:"Baloo 2",cursive;font-size:18px;font-weight:800;color:var(--blue-d);margin-bottom:13px;display:flex;align-items:center;justify-content:space-between}
@@ -339,6 +340,7 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
   <p class="tagline">A New Day! A New Generation!</p>
   <div class="spinner"></div>
 </div>
+<div class="debug-banner" id="debugBanner"></div>
 <script>
   setTimeout(function() {
     var e = document.getElementById('loadingScreen');
@@ -849,6 +851,21 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
 <div class="toast" id="toast"></div>
 
 <script>
+const debugBanner = document.getElementById('debugBanner');
+function showDebug(msg) {
+  if (!debugBanner) return;
+  debugBanner.textContent = msg;
+  debugBanner.style.display = 'block';
+}
+window.addEventListener('error', e => {
+  const loc = (e && e.filename) ? (' @ ' + e.filename.split('/').slice(-1)[0] + ':' + e.lineno) : '';
+  showDebug('Error: ' + (e.message || 'unknown') + loc);
+});
+window.addEventListener('unhandledrejection', e => {
+  const msg = e && e.reason ? (e.reason.message || String(e.reason)) : 'unknown';
+  showDebug('Promise error: ' + msg);
+});
+
 // ════════════════════════════════════════════════════════
 // LANGUAGE STRINGS
 // ════════════════════════════════════════════════════════
@@ -901,7 +918,7 @@ const STRINGS = {
     qrScreenshot:'Ask parent to screenshot & save to phone', pickupCodeLbl:'Pickup Code',
     done:'Done ✅', rewardTitle:'Streak Achieved!', awesome:'Awesome! 🌟',
     pointCamera:"Point camera at child's QR code", back:'← Back',
-    scanTitle:"📷 Scan Child's QR Code", enterCodeLbl:'Enter Pickup Code',
+    scanTitle:"?? Scan Child's QR Code", enterCodeLbl:'Enter Pickup Code',
     checkInBtn:'✅ Check In', checkOutBtn:'🚪 Check Out',
     medicalAlert:'⚠️ Medical / Allergy Alert',
     toddlers:'Toddlers', junior:'Junior', senior:'Senior', teens:'Teens',
@@ -1001,7 +1018,7 @@ function defaultDB() {
       dark: false,
       absentWeeks: 3,
       eventMsg: '📅 Hi! Just a reminder about our upcoming event at Agape Christian Centre. We hope to see your child there! 🙏',
-      absentMsg: "💛 Hi! We missed your child at Agape Kids this week. Hope everything is okay — we'd love to see them back soon! 🙏"
+      absentMsg: "?? Hi! We missed your child at Agape Kids this week. Hope everything is okay ? we'd love to see them back soon! ??"
     }
   };
 }
@@ -1987,9 +2004,15 @@ window.addEventListener('offline', () => { setSyncStatus('error'); toast(T('Offl
 // ════════════════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════════════════
-document.getElementById('hdrDate').innerHTML =
-  new Date().toLocaleDateString(LANG==='af'?'af-ZA':'en-ZA',{weekday:'short',day:'numeric',month:'short'}) + '<br>' +
-  new Date().toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'});
+function updateHdrTime() {
+  const el = document.getElementById('hdrDate');
+  if (!el) return;
+  el.innerHTML =
+    new Date().toLocaleDateString(LANG==='af'?'af-ZA':'en-ZA',{weekday:'short',day:'numeric',month:'short'}) + '<br>' +
+    new Date().toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'});
+}
+updateHdrTime();
+setInterval(updateHdrTime, 60000);
 
 if (DARK) { document.documentElement.setAttribute('data-theme','dark'); document.getElementById('darkBtn').textContent = '☀️'; }
 applyLang();
@@ -2001,3 +2024,6 @@ setTimeout(() => {
 </script>
 </body>
 </html>
+
+
+
