@@ -1,0 +1,10 @@
+{
+  "appId": "com.agapekids.demo",
+  "appName": "Agape Kids",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://YOUR_GITHUB_USERNAME.github.io/agape-kids/",
+    "cleartext": false
+  }
+}
