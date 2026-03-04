@@ -248,6 +248,14 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
 .srow .sl{font-weight:700;font-size:13px}
 .srow .sd{font-size:11px;color:var(--text-3);margin-top:2px}
 .srow select,.srow input[type=number]{padding:7px 10px;border:2px solid var(--border);border-radius:8px;font-family:"Nunito",sans-serif;font-size:13px;outline:none;background:var(--card);color:var(--text)}
+.subtle{font-size:12px;color:var(--text-3);margin:-6px 0 12px}
+.media-title{font-family:"Baloo 2",cursive;font-size:13px;color:var(--blue-d);margin:12px 0 8px}
+.media-list{display:flex;flex-direction:column;gap:8px}
+.media-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1.5px solid var(--border);border-radius:12px;background:var(--blue-xl)}
+.media-item .mi-name{font-size:12px;font-weight:700}
+.media-item .mi-meta{font-size:10px;color:var(--text-3);margin-top:2px}
+.media-item a{font-size:12px;font-weight:700;color:var(--blue-d);text-decoration:none;white-space:nowrap}
+.media-item a:hover{text-decoration:underline}
 
 /* ── BIRTHDAY CARD ── */
 .bday-card{background:linear-gradient(135deg,var(--orange-xl),#FFF0E6);border:2px solid var(--orange-l);border-radius:var(--r);padding:13px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
@@ -754,6 +762,19 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
     <button class="btn btn-blue" onclick="testConnection()" id="l-test-conn">🔌 Test Connection</button>
   </div>
   <div class="card">
+    <div class="card-title" id="l-sheets-export-title">Google Sheets Export</div>
+    <div class="subtle" id="l-sheets-export-desc">Send all app data to your Google Sheet in one click.</div>
+    <button class="btn btn-blue" onclick="exportToSheets()" id="l-export-sheets">Export to Google Sheets</button>
+  </div>
+  <div class="card">
+    <div class="card-title" id="l-drive-media-title">Google Drive Media</div>
+    <div class="subtle" id="l-drive-media-desc">Upload photos or files to Drive and keep links here.</div>
+    <input type="file" id="s-mediaFile" style="display:none" onchange="uploadMediaToDrive(event)">
+    <button class="btn btn-blue" onclick="pickMediaFile()" id="l-upload-media">Upload Media to Google Drive</button>
+    <div class="media-title" id="l-media-uploads">Uploaded Media</div>
+    <div class="media-list" id="mediaUploadsList"></div>
+  </div>
+  <div class="card">
     <div class="card-title" id="l-church-info">⛪ Church Info</div>
     <div class="srow">
       <div><div class="sl" id="l-language">Language / Taal</div></div>
@@ -857,6 +878,10 @@ const STRINGS = {
     leaderboard:'🏅 Points Leaderboard',
     reports:'🧾 Reports', selectDate:'Select Sunday', sheetsConfig:'📡 Google Sheets',
     sheetsUrl:'Apps Script URL', testConn:'🔌 Test Connection', churchInfo:'⛪ Church Info',
+    sheetsExportTitle:'Google Sheets Export', sheetsExportDesc:'Send all app data to your Google Sheet in one click.',
+    exportSheets:'Export to Google Sheets',
+    driveMediaTitle:'Google Drive Media', driveMediaDesc:'Upload photos or files to Drive and keep links here.',
+    uploadMedia:'Upload Media to Google Drive', mediaUploads:'Uploaded Media', mediaUploadsEmpty:'No uploads yet',
     language:'Language / Taal', darkMode:'Dark Mode', absentThresh:'Absent Alert After',
     absentDesc:'Weeks before missing alert', dataMgmt:'💾 Data Management',
     exportAll:'📥 Export All Data to Excel', syncNow:'🔄 Sync with Google Sheets',
@@ -906,6 +931,10 @@ const STRINGS = {
     leaderboard:'🏅 Punteprikbord',
     reports:'🧾 Verslae', selectDate:'Kies Sondag', sheetsConfig:'📡 Google Blaaie',
     sheetsUrl:'Apps Script URL', testConn:'🔌 Toets Verbinding', churchInfo:'⛪ Kerkinligting',
+    sheetsExportTitle:'Google Blaaie Uitvoer', sheetsExportDesc:'Stuur alle app-data na jou Google Blaaie in een klik.',
+    exportSheets:'Voer na Google Blaaie',
+    driveMediaTitle:'Google Drive Media', driveMediaDesc:'Laai fotos of leers op na Drive en hou skakels hier.',
+    uploadMedia:'Laai Media na Google Drive', mediaUploads:'Opgelaaide Media', mediaUploadsEmpty:'Nog geen oplaaie nie',
     language:'Taal / Language', darkMode:'Donker Modus', absentThresh:'Afwesige Waarskuwing Na',
     absentDesc:'Weke voor vermis-waarskuwing', dataMgmt:'💾 Databestuur',
     exportAll:'📥 Voer Alle Data na Excel', syncNow:'🔄 Sinkroniseer met Google Blaaie',
@@ -953,6 +982,7 @@ function defaultDB() {
       {id:'V001',name:'Lena Olivier',phone:'+27761234567',classGroup:'junior'},
       {id:'V002',name:'David Mahlangu',phone:'+27771234567',classGroup:'teen'},
     ],
+    mediaUploads: [],
     settings: {
       sheetsUrl: '',
       lang: 'en',
@@ -967,6 +997,7 @@ function defaultDB() {
 let DB = (() => { try { const r = localStorage.getItem(STORE_KEY); return r ? JSON.parse(r) : defaultDB(); } catch(e) { return defaultDB(); } })();
 if (!DB.volunteers) DB.volunteers = [];
 if (!DB.events) DB.events = [];
+if (!DB.mediaUploads) DB.mediaUploads = [];
 DB.children.forEach(c => { if (!c.qrId) c.qrId = 'AK-' + c.id; if (!c.pickupCode) c.pickupCode = randomCode(); if (!c.stars) c.stars = 0; });
 function saveLocal() { try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); } catch(e) {} }
 
@@ -976,9 +1007,17 @@ function saveLocal() { try { localStorage.setItem(STORE_KEY, JSON.stringify(DB))
 function getSheetsUrl() { return localStorage.getItem(SHEETS_URL_KEY) || DB.settings.sheetsUrl || ''; }
 function setSyncStatus(s) { const d = document.getElementById('syncDot'); d.className = 'sync-dot' + (s === 'ok' ? '' : ' ' + s); }
 
-async function apiCall(params) {
+async function apiCall(params, timeoutMs=8000) {
   const url = getSheetsUrl() + '?' + new URLSearchParams(params);
-  const res = await fetch(url); return res.json();
+  const fetchPromise = fetch(url).then(r => r.json());
+  const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), timeoutMs));
+  return Promise.race([fetchPromise, timeout]);
+}
+
+async function apiPost(payload) {
+  const url = getSheetsUrl();
+  const res = await fetch(url, { method:'POST', body: JSON.stringify(payload) });
+  return res.json();
 }
 
 async function loadFromSheets() {
@@ -986,7 +1025,7 @@ async function loadFromSheets() {
   const url = getSheetsUrl();
   if (!url) { setSyncStatus('error'); setLoadMsg('No Sheets URL — using local data'); setTimeout(hideLoading, 1200); return; }
   try {
-    const data = await apiCall({action:'getAll'});
+    const data = await apiCall({action:'getAll'}, 8000);
     if (data.children?.length) DB.children = data.children.map((r,i) => ({
       id: r.id || 'C'+String(i+1).padStart(3,'0'),
       qrId: r.qrId || 'AK-C'+String(i+1).padStart(3,'0'),
@@ -1014,6 +1053,109 @@ async function pushToSheets(action, data) {
   if (!url) { setSyncStatus('error'); return; }
   try { await apiCall({action, data: JSON.stringify(data)}); setSyncStatus('ok'); }
   catch(e) { setSyncStatus('error'); addToSyncQueue(action, data); }
+}
+
+async function exportToSheets() {
+  if (!getSheetsUrl()) { toast(T('Enter a Sheets URL first','Voer eers ' + 'n URL in'), 'err'); return; }
+  const payload = {
+    children: DB.children || [],
+    attendance: DB.attendance || [],
+    events: DB.events || [],
+    volunteers: DB.volunteers || [],
+    settings: DB.settings || {}
+  };
+  toast(T('Exporting to Google Sheets...','Voer uit na Google Blaaie...'), 'warn');
+  try {
+    const res = await apiPost({ action:'bulkExport', data: payload });
+    if (res && res.success) toast(T('Exported to Google Sheets','Uitgevoer na Google Blaaie'), 'ok');
+    else throw new Error(res && res.error ? res.error : 'Export failed');
+  } catch (e) {
+    toast(T('Export failed','Uitvoer het misluk'), 'err');
+  }
+}
+
+function pickMediaFile() {
+  const input = document.getElementById('s-mediaFile');
+  if (input) input.click();
+}
+
+async function uploadMediaToDrive(event) {
+  if (!getSheetsUrl()) { toast(T('Enter a Sheets URL first','Voer eers ' + 'n URL in'), 'err'); return; }
+  const input = event && event.target ? event.target : null;
+  const file = input && input.files ? input.files[0] : null;
+  if (!file) return;
+  if (file.size > 8 * 1024 * 1024) {
+    toast(T('File too large (max 8MB)','Leêr te groot (maks 8MB)'), 'err');
+    if (input) input.value = '';
+    return;
+  }
+  toast(T('Uploading media...','Laai media op...'), 'warn');
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try {
+      const dataUrl = reader.result || '';
+      const base64 = String(dataUrl).split(',')[1] || '';
+      const res = await apiPost({
+        action: 'uploadMedia',
+        data: { fileName: file.name, mimeType: file.type || 'application/octet-stream', base64 }
+      });
+      if (res && res.success && res.url) {
+        DB.mediaUploads = DB.mediaUploads || [];
+        DB.mediaUploads.push({
+          name: res.name || file.name,
+          url: res.url,
+          mimeType: res.mimeType || file.type || '',
+          size: res.size || file.size || 0,
+          createdAt: new Date().toISOString()
+        });
+        saveLocal();
+        renderMediaUploads();
+        toast(T('Upload complete','Oplaaing voltooi'), 'ok');
+      } else {
+        throw new Error(res && res.error ? res.error : 'Upload failed');
+      }
+    } catch (e) {
+      toast(T('Upload failed','Oplaaing het misluk'), 'err');
+    } finally {
+      if (input) input.value = '';
+    }
+  };
+  reader.onerror = () => { toast(T('Upload failed','Oplaaing het misluk'), 'err'); if (input) input.value = ''; };
+  reader.readAsDataURL(file);
+}
+
+function renderMediaUploads() {
+  const list = document.getElementById('mediaUploadsList');
+  if (!list) return;
+  const items = Array.isArray(DB.mediaUploads) ? DB.mediaUploads : [];
+  if (!items.length) {
+    list.innerHTML = `<div class="empty"><div class="ei">+</div><h3>${t('mediaUploadsEmpty')}</h3></div>`;
+    return;
+  }
+  list.innerHTML = items.slice().reverse().map(item => {
+    const name = escapeHtml(item.name || 'File');
+    const url = escapeHtml(item.url || '#');
+    const meta = [item.mimeType || '', item.size ? formatBytes(item.size) : ''].filter(Boolean).join(' | ');
+    return `<div class="media-item">
+      <div>
+        <div class="mi-name">${name}</div>
+        <div class="mi-meta">${escapeHtml(meta)}</div>
+      </div>
+      <a href="${url}" target="_blank" rel="noopener">Open</a>
+    </div>`;
+  }).join('');
+}
+
+function formatBytes(bytes) {
+  if (!bytes || bytes <= 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B','KB','MB','GB'];
+  const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1);
+  return (bytes / Math.pow(k, i)).toFixed(i === 0 ? 0 : 1) + ' ' + sizes[i];
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
 }
 
 // Offline sync queue
@@ -1792,6 +1934,7 @@ function renderSettings() {
   document.getElementById('s-lang').value = LANG;
   document.getElementById('s-dark').value = DARK ? '1' : '0';
   document.getElementById('s-absentWeeks').value = DB.settings.absentWeeks || 3;
+  renderMediaUploads();
 }
 function saveSettings() {
   DB.settings.sheetsUrl = document.getElementById('s-sheetsUrl').value.trim();
@@ -1835,6 +1978,10 @@ document.getElementById('hdrDate').innerHTML =
 if (DARK) { document.documentElement.setAttribute('data-theme','dark'); document.getElementById('darkBtn').textContent = '☀️'; }
 applyLang();
 loadFromSheets();
+setTimeout(() => {
+  const e = document.getElementById('loadingScreen');
+  if (e && e.style.display !== 'none') { setLoadMsg('Ready!'); hideLoading(); }
+}, 6000);
 </script>
 </body>
 </html>
