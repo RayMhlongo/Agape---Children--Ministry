@@ -337,6 +337,16 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
   <p class="tagline">A New Day! A New Generation!</p>
   <div class="spinner"></div>
 </div>
+<script>
+  setTimeout(function() {
+    var e = document.getElementById('loadingScreen');
+    if (e && e.style.display !== 'none') { e.style.display = 'none'; }
+  }, 8000);
+  window.addEventListener('error', function() {
+    var e = document.getElementById('loadingScreen');
+    if (e && e.style.display !== 'none') { e.style.display = 'none'; }
+  });
+</script>
 
 <!-- HEADER -->
 <div class="hdr">
