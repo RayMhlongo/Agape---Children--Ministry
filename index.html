@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light" data-lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Agape Kids</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1C6396">
@@ -29,6 +29,8 @@
   --shadow-s:0 2px 12px rgba(28,99,150,0.10);
   --shadow-m:0 6px 28px rgba(28,99,150,0.16);
   --r:18px; --r-s:12px;
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
   /* class colours */
   --toddler:#F8C940; --junior:#4CAF50; --senior:#5EA4D7; --teen:#7B5EA7;
 }
@@ -53,7 +55,7 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── HEADER ── */
-.hdr{background:linear-gradient(135deg,var(--blue-d),#0E4A75);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 4px 20px rgba(28,99,150,.4);z-index:10}
+.hdr{background:linear-gradient(135deg,var(--blue-d),#0E4A75);padding:calc(10px + var(--safe-top)) 16px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 4px 20px rgba(28,99,150,.4);z-index:10}
 .hdr-brand{display:flex;align-items:center;gap:10px}
 .hdr-logo{width:44px;height:44px;border-radius:12px;background:white;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .hdr-logo img{width:44px;height:44px;object-fit:cover;display:block}
@@ -76,7 +78,7 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
 .nav-btn.active{border-bottom-color:var(--orange)}
 
 /* ── BODY ── */
-.body{flex:1;overflow-y:auto;overflow-x:hidden}
+.body{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:var(--safe-bottom)}
 .screen{display:none;padding:14px;max-width:600px;margin:0 auto;animation:fadeUp .25s ease}
 .screen.active{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -1500,7 +1502,7 @@ function renderChildList() {
         <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
           <button class="btn btn-blue btn-sm" onclick="showQRCode('${c.id}')">📲 QR</button>
           <button class="btn btn-ghost btn-sm" onclick="editChild('${c.id}')">✏️ ${T('Edit','Wysig')}</button>
-          ${c.parentPhone ? `<a href="https://wa.me/${c.parentPhone.replace(/\D/g,'')}?text=${encodeURIComponent(T('Hi '+c.parentName+'! Just a message from Agape Kids 🙏','Hallo '+c.parentName+'! Net 'n boodskap van Agape Kinders 🙏'))}" target="_blank" style="text-align:center;font-size:11px;font-weight:700;color:#25D366;text-decoration:none">💬 WA</a>` : ''}
+          ${c.parentPhone ? `<a href="https://wa.me/${c.parentPhone.replace(/\D/g,'')}?text=${encodeURIComponent(T('Hi '+c.parentName+'! Just a message from Agape Kids 🙏',"Hallo "+c.parentName+"! Net 'n boodskap van Agape Kinders 🙏"))}" target="_blank" style="text-align:center;font-size:11px;font-weight:700;color:#25D366;text-decoration:none">💬 WA</a>` : ''}
         </div>
       </div>
     </div>`;
@@ -1722,7 +1724,7 @@ function updateBroadcast() {
 let bcastQueue=[], bcastIdx=0;
 function startBroadcast() {
   const msg = document.getElementById('bcast-msg').value.trim();
-  if (!msg) { toast(T('Enter a message first','Voer eers 'n boodskap in'), 'err'); return; }
+  if (!msg) { toast(T('Enter a message first',"Voer eers 'n boodskap in"), 'err'); return; }
   const r = getBcastRecipients();
   if (!r.length) { toast(T('No recipients','Geen ontvangers'), 'err'); return; }
   bcastQueue = r; bcastIdx = 0; sendNextBcast(msg);
@@ -1752,7 +1754,7 @@ function renderVolList() {
   el.innerHTML = DB.volunteers.map(v => `<div class="vol-row">
     <div class="vol-avatar">${v.name[0]}</div>
     <div style="flex:1"><div style="font-weight:700">${v.name}</div><div style="font-size:12px;color:var(--text-3)">${classLabel(v.classGroup)} · ${v.phone||T('No number','Geen nommer')}</div></div>
-    ${v.phone ? `<a href="https://wa.me/${v.phone.replace(/\D/g,'')}?text=${encodeURIComponent(T('Hi '+v.name+'! A quick message from Agape Kids leadership 🙏','Hallo '+v.name+'! 'n Vinnige boodskap van Agape Kinders-leierskap 🙏'))}" target="_blank" class="btn btn-wa btn-sm">💬</a>` : ''}
+    ${v.phone ? `<a href="https://wa.me/${v.phone.replace(/\D/g,'')}?text=${encodeURIComponent(T('Hi '+v.name+'! A quick message from Agape Kids leadership 🙏',"Hallo "+v.name+"! 'n Vinnige boodskap van Agape Kinders-leierskap 🙏"))}" target="_blank" class="btn btn-wa btn-sm">💬</a>` : ''}
   </div>`).join('');
 }
 
@@ -1954,7 +1956,7 @@ function saveSettings() {
 }
 async function testConnection() {
   const url = document.getElementById('s-sheetsUrl').value.trim();
-  if (!url) { toast(T('Enter a URL first','Voer eers 'n URL in'), 'err'); return; }
+  if (!url) { toast(T('Enter a URL first',"Voer eers 'n URL in"), 'err'); return; }
   localStorage.setItem(SHEETS_URL_KEY, url);
   toast(T('Testing…','Toets…'), 'warn');
   try { const data = await fetch(url+'?action=getAll').then(r=>r.json()); toast(T('Connected! ✅','Verbind! ✅'), 'ok'); }
