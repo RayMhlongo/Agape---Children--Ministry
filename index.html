@@ -35,9 +35,9 @@
   --toddler:#F8C940; --junior:#4CAF50; --senior:#5EA4D7; --teen:#7B5EA7;
 }
 [data-theme="dark"] {
-  --off-white:#0D1F2D; --card:#132535; --text:#E8F4FC; --text-2:#A8D4EF;
-  --text-3:#5EA4D7; --border:#1C3A52; --white:#132535;
-  --blue-xl:#0D2B3E; --orange-xl:#1A1208; --yellow-xl:#1A1600;
+  --off-white:#0D1F2D; --card:#1A3A4F; --text:#F0F7FC; --text-2:#B8E0F0;
+  --text-3:#6BA8D0; --border:#2A4A5F; --white:#1A3A4F;
+  --blue-xl:#0F2535; --orange-xl:#2A1A08; --yellow-xl:#2A2008;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden}
@@ -53,6 +53,11 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
 @keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-10px)}}
 .spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInScale{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+@keyframes float{0%,100%{transform:translateY(0px)}50%{transform:translateY(-8px)}}
+@keyframes confettiFall{to{opacity:0;transform:translate(0,100vh) rotate(360deg)}}
+@keyframes pulse-scale{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 
 /* ── HEADER ── */
 .hdr{background:linear-gradient(135deg,var(--blue-d),#0E4A75);padding:calc(10px + var(--safe-top)) 16px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 4px 20px rgba(28,99,150,.4);z-index:10}
@@ -84,12 +89,13 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── CARDS ── */
-.card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:13px;box-shadow:var(--shadow-s);border:1.5px solid var(--border)}
+.card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:13px;box-shadow:var(--shadow-s);border:1.5px solid var(--border);animation:slideInUp 0.4s ease-out;transition:all 0.3s ease}
 .card-title{font-family:"Baloo 2",cursive;font-size:15px;font-weight:700;color:var(--blue-d);margin-bottom:13px;display:flex;align-items:center;gap:7px}
 
 /* ── BUTTONS ── */
 .btn{width:100%;padding:13px;border:none;border-radius:var(--r-s);font-family:"Baloo 2",cursive;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px}
-.btn:active{transform:scale(.98)}
+.btn:active{transform:scale(.98);animation:pulse-scale 0.2s ease-out}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.2)}
 .btn-blue{background:linear-gradient(135deg,var(--blue),var(--blue-d));color:white;box-shadow:0 4px 16px rgba(28,99,150,.3)}
 .btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange-d));color:white;box-shadow:0 4px 16px rgba(237,110,30,.3)}
 .btn-yellow{background:linear-gradient(135deg,var(--yellow),var(--yellow-d));color:var(--text)}
@@ -111,7 +117,8 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
 /* ── STATS ── */
 .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:13px}
 .stats-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:13px}
-.stat{background:var(--card);border-radius:var(--r);padding:14px 10px;text-align:center;box-shadow:var(--shadow-s);border:1.5px solid var(--border)}
+.stat{background:var(--card);border-radius:var(--r);padding:14px 10px;text-align:center;box-shadow:var(--shadow-s);border:1.5px solid var(--border);transition:all 0.3s ease;cursor:pointer}
+.stat:hover{transform:translateY(-4px);box-shadow:var(--shadow-m)}
 .stat .n{font-family:"Baloo 2",cursive;font-size:28px;font-weight:800;line-height:1}
 .stat .l{font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.6px;margin-top:3px}
 .stat.blue .n{color:var(--blue-d)}
@@ -167,6 +174,7 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
 .action-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
 .big-btn{border:none;border-radius:var(--r);padding:20px 10px;font-family:"Baloo 2",cursive;font-size:13px;font-weight:700;color:white;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;transition:transform .15s;box-shadow:var(--shadow-m)}
 .big-btn:active{transform:scale(.96)}
+.big-btn:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,0,0,0.3)}
 .big-btn .bi{font-size:30px}
 .big-btn.blue{background:linear-gradient(135deg,var(--blue),var(--blue-d))}
 .big-btn.orange{background:linear-gradient(135deg,var(--orange),var(--orange-d))}
@@ -177,13 +185,20 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
 /* ── OVERLAY / POPUP ── */
 .overlay{position:fixed;inset:0;z-index:300;background:rgba(13,43,62,.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:18px}
 .overlay.show{display:flex}
-.popup{background:var(--card);border-radius:24px;padding:24px 20px;max-width:380px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.3);animation:popIn .3s cubic-bezier(.34,1.56,.64,1);max-height:90vh;overflow-y:auto}
+.popup{background:var(--card);border-radius:24px;padding:24px 20px;max-width:380px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.3);animation:popIn .4s cubic-bezier(.34,1.56,.64,1);max-height:90vh;overflow-y:auto;border:2px solid var(--border)}
 @keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
 .popup h2{font-family:"Baloo 2",cursive;font-size:20px;color:var(--blue-d);margin-bottom:6px;text-align:center}
 .popup .big-emoji{font-size:52px;text-align:center;display:block;margin-bottom:8px}
 
 /* ── SCANNER ── */
 .scanner-wrap{border-radius:var(--r);overflow:hidden;margin-bottom:13px;position:relative;background:#000}
+/* ── SCRIPTURE POPUP ── */
+.scripture-popup{background:linear-gradient(135deg,var(--blue),var(--blue-d));border-radius:24px;padding:32px 24px;max-width:420px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.3);animation:popIn .5s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden;border:2px solid var(--blue-l)}
+.scripture-popup::before{content:"";position:absolute;top:-50%;right:-50%;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,0.1),transparent);border-radius:50%;pointer-events:none}
+.scripture-popup .verse{font-family:"Baloo 2",cursive;font-size:18px;font-weight:700;color:white;line-height:1.8;margin-bottom:16px;text-align:center;position:relative;z-index:1;text-shadow:0 2px 4px rgba(0,0,0,0.2)}
+.scripture-popup .reference{font-size:13px;color:rgba(255,255,255,0.95);font-weight:600;text-align:center;position:relative;z-index:1;letter-spacing:0.5px}
+.scripture-popup .daily-tag{display:inline-block;background:rgba(255,255,255,0.25);color:white;padding:6px 14px;border-radius:20px;font-size:10px;font-weight:700;margin-bottom:14px;text-align:center;width:100%;letter-spacing:1px;text-transform:uppercase;backdrop-filter:blur(8px)}
+
 #qr-reader{width:100%!important}
 #qr-reader video{width:100%!important;border-radius:var(--r)}
 #qr-reader img,#qr-reader__dashboard,#qr-reader__status_span,#qr-reader__header_message{display:none!important}
@@ -318,10 +333,20 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
 .vol-row:last-child{border-bottom:none}
 .vol-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--blue-l),var(--blue));display:flex;align-items:center;justify-content:center;font-family:"Baloo 2",cursive;font-size:16px;font-weight:800;color:white;flex-shrink:0}
 
-/* ── TABS ── */
 .tab-row{display:flex;gap:8px;margin-bottom:14px;border-bottom:2px solid var(--border);padding-bottom:0}
 .tab{padding:8px 16px;font-weight:700;font-size:12px;color:var(--text-3);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;font-family:"Nunito",sans-serif}
-.tab.active{color:var(--blue-d);border-bottom-color:var(--orange)}
+.tab.active{color:var(--blue-d);border-bottom-color:var(--orange);animation:fadeInScale 0.3s ease-out}
+.tab:hover{color:var(--blue-d);opacity:0.8}
+
+/* ── CONFETTI PARTICLE ── */
+.confetti{position:fixed;pointer-events:none;width:10px;height:10px;animation:confettiFall 3s ease-in forwards}
+
+/* ── ACHIEVEMENT TILE ── */
+.achievement{background:linear-gradient(135deg,var(--yellow),var(--yellow-d));border-radius:16px;padding:16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(248,201,64,0.3);border:2px solid var(--yellow-l);animation:fadeInScale 0.4s cubic-bezier(.34,1.56,.64,1)}
+.achievement .icon{font-size:32px}
+.achievement .text{flex:1}
+.achievement .title{font-family:"Baloo 2",cursive;font-weight:800;color:var(--text);font-size:14px}
+.achievement .desc{font-size:11px;color:var(--text-2);margin-top:2px}
 
 @media print {
   .hdr,.nav,.no-print{display:none!important}
@@ -361,6 +386,7 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
   <div class="hdr-right">
     <div class="hdr-date" id="hdrDate"></div>
     <button class="lang-btn" onclick="toggleLang()" id="langBtn">AF</button>
+    <button class="dark-btn" onclick="showDailyScripture()" title="Daily Scripture">📖</button>
     <button class="dark-btn" onclick="toggleDark()" id="darkBtn">🌙</button>
     <div class="sync-dot" id="syncDot"></div>
   </div>
@@ -848,6 +874,14 @@ body{font-family:"Nunito",sans-serif;background:var(--off-white);color:var(--tex
     <button class="btn btn-yellow" onclick="closeOverlay('rewardOverlay')" id="l-awesome">Awesome! 🌟</button>
   </div>
 </div>
+<div class="overlay" id="scriptureOverlay">
+  <div class="scripture-popup" style="text-align:center">
+    <div class="daily-tag">✨ Daily Scripture</div>
+    <div class="verse" id="scriptureText">For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.</div>
+    <div class="reference" id="scriptureRef">John 3:16</div>
+    <button class="btn btn-blue" style="margin-top:20px" onclick="closeOverlay('scriptureOverlay')">Got it! 🙏</button>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1029,6 +1063,70 @@ if (!DB.events) DB.events = [];
 if (!DB.mediaUploads) DB.mediaUploads = [];
 DB.children.forEach(c => { if (!c.qrId) c.qrId = 'AK-' + c.id; if (!c.pickupCode) c.pickupCode = randomCode(); if (!c.stars) c.stars = 0; });
 function saveLocal() { try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); } catch(e) {} }
+
+// ════════════════════════════════════════════════════════
+// DAILY SCRIPTURES & FANCY FEATURES
+// ════════════════════════════════════════════════════════
+const SCRIPTURE_DB = [
+  {verse: 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.', ref: 'John 3:16'},
+  {verse: 'Trust in the LORD with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.', ref: 'Proverbs 3:5-6'},
+  {verse: 'The Lord is my shepherd, I lack nothing. He makes me lie down in green pastures, he leads me beside quiet waters, he refreshes my soul.', ref: 'Psalm 23:1-3'},
+  {verse: 'But seek first his kingdom and his righteousness, and all these things will be given to you as well.', ref: 'Matthew 6:33'},
+  {verse: 'I can do all this through him who gives me strength.', ref: 'Philippians 4:13'},
+  {verse: 'For it is by grace you have been saved, through faith—and this is not from yourselves, it is the gift of God.', ref: 'Ephesians 2:8'},
+  {verse: 'Jesus answered, "I am the way and the truth and the life. No one comes to the Father except through me."', ref: 'John 14:6'},
+  {verse: 'Come to me, all you who are weary and burdened, and I will give you rest. Take my yoke upon you and learn from me, for I am gentle and humble in heart, and you will find rest for your souls.', ref: 'Matthew 11:28'},
+  {verse: 'Therefore, as God\'s chosen people, holy and dearly loved, clothe yourselves with compassion, kindness, humility, gentleness and patience.', ref: 'Colossians 3:12'},
+  {verse: 'The heavens declare the glory of God; the skies proclaim the work of his hands.', ref: 'Psalm 19:1'},
+  {verse: 'And my God will meet all your needs according to the riches of his glory in Christ Jesus.', ref: 'Philippians 4:19'},
+  {verse: 'Be joyful always; pray continually; give thanks in all circumstances, for this is God\'s will for you in Christ Jesus.', ref: '1 Thessalonians 5:16-18'},
+  {verse: 'Let the little children come to me, and do not hinder them, for the kingdom of heaven belongs to such as these.', ref: 'Matthew 19:14'},
+  {verse: 'Train up a child in the way they should go; even when old, they will not depart from it.', ref: 'Proverbs 22:6'},
+  {verse: 'Children are a heritage from the Lord, offspring a reward from him.', ref: 'Psalm 127:3'},
+  {verse: 'Whoever welcomes one of these little children in my name welcomes me; and whoever welcomes me does not welcome me but the one who sent me.', ref: 'Mark 9:37'},
+  {verse: 'Love the Lord your God with all your heart and with all your soul and with all your mind. This is the first and greatest commandment.', ref: 'Matthew 22:37-38'},
+  {verse: 'But the fruit of the Spirit is love, joy, peace, forbearance, kindness, goodness, faithfulness, gentleness and self-control.', ref: 'Galatians 5:22-23'},
+  {verse: 'So whether you eat or drink or whatever you do, do it all for the glory of God.', ref: '1 Corinthians 10:31'},
+  {verse: 'Now to him who is able to do immeasurably more than all we ask or imagine, according to his power that is at work within us, to him be glory in the church and in Christ Jesus throughout all generations, for ever and ever! Amen.', ref: 'Ephesians 3:20-21'}
+];
+
+function getDailyScripture() {
+  const today = new Date().toDateString();
+  const lastDate = localStorage.getItem('scripture_date');
+  if (lastDate === today) {
+    const idx = parseInt(localStorage.getItem('scripture_idx') || '0');
+    return SCRIPTURE_DB[idx];
+  }
+  const idx = Math.floor(Math.random() * SCRIPTURE_DB.length);
+  localStorage.setItem('scripture_idx', idx);
+  localStorage.setItem('scripture_date', today);
+  return SCRIPTURE_DB[idx];
+}
+
+function showDailyScripture() {
+  const s = getDailyScripture();
+  document.getElementById('scriptureText').textContent = s.verse;
+  document.getElementById('scriptureRef').textContent = s.ref;
+  const overlay = document.getElementById('scriptureOverlay');
+  overlay.classList.add('show');
+  setTimeout(() => createConfetti(30), 200);
+}
+
+function createConfetti(count = 30) {
+  const colors = ['#5EA4D7', '#ED6E1E', '#F8C940', '#4CAF50', '#7B5EA7'];
+  for (let i = 0; i < count; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.left = Math.random() * 100 + 'vw';
+    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.setProperty('--delay', (Math.random() * 0.5) + 's');
+    confetti.style.animation = `confettiFall ${2 + Math.random()}s linear forwards`;
+    confetti.style.setProperty('--delay-value', (Math.random() * 0.5) + 's');
+    confetti.style.animationDelay = confetti.style.getPropertyValue('--delay-value');
+    document.body.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 3000);
+  }
+}
 
 // ════════════════════════════════════════════════════════
 // GOOGLE SHEETS
@@ -1860,6 +1958,7 @@ function renderStreaks() {
   streaks.forEach(({c,streak}) => {
     if ([4,8,12,16,20].includes(streak)) {
       setTimeout(() => {
+        createConfetti(50);
         document.getElementById('rewardMsg').textContent = T(fullName(c)+' has attended '+streak+' Sundays in a row! 🎉',fullName(c)+' het '+streak+' Sondae agtereenvolgens bygewoon! 🎉');
         document.getElementById('rewardOverlay').classList.add('show');
       }, 800);
@@ -2017,6 +2116,7 @@ setInterval(updateHdrTime, 60000);
 if (DARK) { document.documentElement.setAttribute('data-theme','dark'); document.getElementById('darkBtn').textContent = '☀️'; }
 applyLang();
 loadFromSheets();
+setTimeout(() => showDailyScripture(), 1000);
 setTimeout(() => {
   const e = document.getElementById('loadingScreen');
   if (e && e.style.display !== 'none') { setLoadMsg('Ready!'); hideLoading(); }
