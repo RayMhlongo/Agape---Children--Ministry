@@ -1393,16 +1393,60 @@ function isCheckedIn(childId) { return getTodayAtt().find(a => a.childId === chi
 // ════════════════════════════════════════════════════════
 // QR SCANNER
 // ════════════════════════════════════════════════════════
+// QR SCANNER WITH CAMERA PERMISSIONS
+// ════════════════════════════════════════════════════════
 let html5QrCode = null;
 let scanMode = 'checkin';
+
+async function requestCameraPermission() {
+  try {
+    // Try Capacitor Camera API first (for native apps)
+    if (window.Capacitor && window.Capacitor.isNative) {
+      const { Camera } = Capacitor.Plugins;
+      try {
+        const permission = await Camera.checkPermissions();
+        if (permission.camera === 'prompt' || permission.camera === 'denied') {
+          const result = await Camera.requestPermissions();
+          if (result.camera !== 'granted') {
+            return false;
+          }
+        }
+      } catch(e) {
+        console.log('Capacitor camera check skipped');
+      }
+    }
+    // Try native HTML5 permissions API
+    if (navigator.permissions && navigator.permissions.query) {
+      const result = await navigator.permissions.query({ name: 'camera' });
+      if (result.state === 'denied') {
+        return false;
+      }
+    }
+    return true;
+  } catch(e) {
+    console.log('Permission check error:', e);
+    return true; // Allow retry anyway
+  }
+}
+
 function startCheckinScan() { scanMode = 'checkin'; startScan(); }
-function startScan() {
+
+async function startScan() {
+  const hasPermission = await requestCameraPermission();
+  if (!hasPermission) {
+    toast(T('Camera permission denied — use manual search', 'Kameratoegang geweier — gebruik handmatige soek'), 'err');
+    return;
+  }
   showView('v-scanner');
   html5QrCode = new Html5Qrcode('qr-reader');
   html5QrCode.start({facingMode:'environment'},{fps:10,qrbox:{width:200,height:200}},
     decoded => { html5QrCode.stop().then(() => { html5QrCode = null; handleQrScan(decoded); }); },
     () => {}
-  ).catch(() => { toast(T('Camera denied — use manual search', 'Kamera geweier — gebruik handmatige soek'), 'err'); showView('v-home'); });
+  ).catch((err) => { 
+    console.error('QR Scanner error:', err);
+    toast(T('Camera error — use manual search', 'Kamerafout — gebruik handmatige soek'), 'err'); 
+    showView('v-home'); 
+  });
 }
 function stopScan() { if (html5QrCode) { try { html5QrCode.stop(); } catch(e) {} html5QrCode = null; } showView('v-home'); }
 function handleQrScan(qrId) {
