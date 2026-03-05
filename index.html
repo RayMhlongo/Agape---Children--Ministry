@@ -1400,42 +1400,54 @@ let scanMode = 'checkin';
 
 async function requestCameraPermission() {
   try {
-    // Try Capacitor Camera API first (for native apps)
-    if (window.Capacitor && window.Capacitor.isNative) {
-      const { Camera } = Capacitor.Plugins;
-      try {
-        const permission = await Camera.checkPermissions();
-        if (permission.camera === 'prompt' || permission.camera === 'denied') {
-          const result = await Camera.requestPermissions();
-          if (result.camera !== 'granted') {
-            return false;
-          }
-        }
-      } catch(e) {
-        console.log('Capacitor camera check skipped');
-      }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      return false;
     }
-    // Try native HTML5 permissions API
+
+    // Probe camera access once so browser/webview can request runtime permission.
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' } },
+      audio: false
+    });
+    stream.getTracks().forEach((t) => t.stop());
+
     if (navigator.permissions && navigator.permissions.query) {
-      const result = await navigator.permissions.query({ name: 'camera' });
-      if (result.state === 'denied') {
-        return false;
+      try {
+        const result = await navigator.permissions.query({ name: 'camera' });
+        if (result.state === 'denied') return false;
+      } catch (_) {
+        // Some browsers/webviews throw for camera permission query.
       }
     }
     return true;
   } catch(e) {
     console.log('Permission check error:', e);
-    return true; // Allow retry anyway
+    return false;
   }
 }
 
 function startCheckinScan() { scanMode = 'checkin'; startScan(); }
 
 async function startScan() {
+  if (typeof Html5Qrcode === 'undefined') {
+    toast(T('Scanner unavailable on this device', 'Skandeerder onbeskikbaar op hierdie toestel'), 'err');
+    showView('v-manual');
+    return;
+  }
+  if (!window.isSecureContext && !(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform())) {
+    toast(T('Camera requires HTTPS or app mode', 'Kamera vereis HTTPS of app-modus'), 'err');
+    showView('v-manual');
+    return;
+  }
   const hasPermission = await requestCameraPermission();
   if (!hasPermission) {
     toast(T('Camera permission denied — use manual search', 'Kameratoegang geweier — gebruik handmatige soek'), 'err');
+    showView('v-manual');
     return;
+  }
+  if (html5QrCode) {
+    try { await html5QrCode.stop(); } catch (e) {}
+    html5QrCode = null;
   }
   showView('v-scanner');
   html5QrCode = new Html5Qrcode('qr-reader');
