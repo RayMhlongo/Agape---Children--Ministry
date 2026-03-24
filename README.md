@@ -1,129 +1,69 @@
-# Agape Kids — Children's Church Manager
+# Agape Kids
 
-**Agape Christian Centre · 90 Munnik Street, Louis Trichardt, Limpopo, 0920**
+Agape Kids is the children's ministry operations app for Agape Christian Centre in Louis Trichardt. It is built to stay lightweight, mobile-first, installable as a PWA, and compatible with GitHub Pages, Google Sheets, Apps Script, and a Capacitor Android wrapper.
 
-> A New Day! A New Generation! — 'n Nuwe Dag! 'n Nuwe Generasie!
+## Current modules
 
----
+- Child registration and profile management
+- Check-in and check-out with pickup verification
+- Attendance tracking, Sunday summaries, and exports
+- Volunteer and event coordination
+- Follow-up messaging and WhatsApp sharing
+- Polls with results, export, and duplicate-vote protection by device
+- Offline-first local storage with sync recovery
 
-## 🚀 Deploy to GitHub Pages (Free)
+## GitHub Pages deploy
 
-### Step 1 — Create GitHub Account
-Go to [github.com](https://github.com) and sign up (free).
+1. Push the repo to GitHub.
+2. Open repository settings.
+3. Under `Pages`, publish from the `main` branch and the repository root.
+4. Your live URL will be:
+   `https://raymhlongo.github.io/Agape---Children--Ministry/`
 
-### Step 2 — Create Repository
-1. Click **＋ New repository**
-2. Name it: `agape-kids`
-3. Set to **Public**
-4. Click **Create repository**
+## Google Sheets setup
 
-### Step 3 — Upload Files
-1. Click **uploading an existing file**
-2. Drag ALL files from this folder:
-   - `index.html`
-   - `manifest.json`
-   - `service-worker.js`
-   - `README.md`
-   - The entire `icons/` folder
-3. Click **Commit changes**
+Create these sheet tabs:
 
-### Step 4 — Enable GitHub Pages
-1. Go to **Settings** → **Pages**
-2. Under Source, select **Deploy from a branch**
-3. Choose **main** branch → **/ (root)**
-4. Click **Save**
-5. Wait 2 minutes — your URL will appear:
-   `https://yourusername.github.io/agape-kids`
-
-### Step 5 — Install on Phone
-1. Open the URL in **Chrome** on your phone
-2. Tap the **three dots (⋮)** → **Add to Home Screen**
-3. App installs with Agape Kids icon
-4. Opens full-screen, works offline ✅
-
----
-
-## 📡 Connect to Google Sheets
-
-### Step 1 — Create Google Sheet
-Create a new Google Sheet with these tabs (exact names):
 - `Children`
 - `Attendance`
 - `Events`
 - `Volunteers`
 - `Settings`
+- `Polls`
+- `PollVotes`
 
-### Step 2 — Add Headers
+Recommended headers:
 
-**Children tab (Row 1):**
-`id | qrId | fname | lname | bday | classGroup | allergy | notes | parentName | parentPhone | relation | emergencyContact | unchurched | firstAttended | pickupCode | stars`
+`Children`
+`id | qrId | fname | lname | bday | classGroup | allergy | notes | ministryNotes | pastoralNotes | parentName | parentPhone | relation | emergencyContact | unchurched | firstAttended | pickupCode | stars`
 
-**Attendance tab (Row 1):**
+`Attendance`
 `id | childId | date | type | checkinTime | checkoutTime | collectedBy | late | firstVisit`
 
-**Events tab (Row 1):**
+`Events`
 `id | name | date | type | desc`
 
-**Volunteers tab (Row 1):**
+`Volunteers`
 `id | name | phone | classGroup`
 
-**Settings tab (Row 1):**
-`key | value | description`
+`Settings`
+`key | value`
 
-Settings rows to add:
-```
-absentWeeks | 3 | Weeks before missing alert
-eventMsg    | 📅 Reminder about our upcoming event at Agape Christian Centre! 🙏 | Event message
-absentMsg   | 💛 We missed your child at Agape Kids. Hope all is well — we'd love to see them back! 🙏 | Absent follow-up
-```
+`Polls`
+`id | title | description | type | options | startDate | endDate | visibility | active | createdAt | createdBy | updatedAt`
 
-### Step 3 — Add Apps Script
-1. In your Google Sheet: **Extensions → Apps Script**
-2. Delete all existing code
-3. Paste the code from `apps-script.gs` below
-4. Save as "AgapeKidsAPI"
-5. **Deploy → New Deployment → Web App**
-6. Execute as: **Me** | Who has access: **Anyone**
-7. Click Deploy → Authorise → Copy the URL
+`PollVotes`
+`id | pollId | deviceId | selectedOptions | voterRole | operatorName | createdAt`
 
-### Step 4 — Connect App
-1. Open the Agape Kids app
-2. Go to **⚙️ Settings**
-3. Paste the Apps Script URL
-4. Tap **🔌 Test Connection**
-5. Green dot = connected ✅
+## Apps Script deploy
 
----
+1. Open the Google Sheet.
+2. Go to `Extensions -> Apps Script`.
+3. Replace the project code with [`apps-script.gs`](./apps-script.gs).
+4. Deploy as a web app.
+5. Set access to anyone with the link.
+6. Copy the deployment URL into Agape Kids settings.
 
-## 🌍 Language
-Toggle English ↔ Afrikaans using the **AF/EN** button in the header.
+## Android APK
 
-## 🌙 Dark Mode
-Tap the **🌙** button for dark mode (great for evening services).
-
-## 📥 Export Data
-- **Attendance screen** → Export to Excel button
-- **Reports screen** → Export Sunday report to Excel
-- **Settings** → Export ALL data to Excel
-
----
-
-## ⚙️ Class Groups & Colours
-| Class | Age | Colour |
-|-------|-----|--------|
-| 🟡 Toddlers | 0–3 | Yellow |
-| 🟢 Junior | 4–7 | Green |
-| 🔵 Senior | 8–11 | Blue |
-| 🟣 Teens | 12+ | Purple |
-
----
-
-## 🛡️ Child Safety
-- Every child has a unique **Pickup Code** (e.g. BLUE, STAR, FISH)
-- Parent shows code at checkout — must match before child is released
-- Medical/allergy alerts shown automatically at check-in
-- Unchurched families flagged for pastoral follow-up
-
----
-
-*Built with ❤️ for Agape Christian Centre, Louis Trichardt*
+This repo includes a GitHub Actions workflow that builds and releases a debug APK on pushes to `main`. Capacitor uses the live GitHub Pages site as the wrapped experience, so the web app should be deployed before distributing the APK widely.

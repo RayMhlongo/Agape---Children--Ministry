@@ -1,8 +1,8 @@
-name: Build Demo APK
+name: Build Agape Kids APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -93,34 +93,32 @@ jobs:
 
       - name: Create Release with APK
         uses: softprops/action-gh-release@v1
-        if: github.event_name == 'workflow_dispatch'
+        if: github.ref == 'refs/heads/main'
         with:
           files: android/app/build/outputs/apk/debug/app-debug.apk
-          tag_name: v${{ github.run_number }}
-          release_name: Agape Kids APK v${{ github.run_number }}
+          tag_name: apk-build-${{ github.run_number }}
+          release_name: Agape Kids APK build ${{ github.run_number }}
           body: |
-            # Agape Kids - Android APK
-            
+            # Agape Kids Android APK
+
             **Build Date**: ${{ github.event.head_commit.timestamp }}
-            **Latest Changes**: Daily scripture popup with 20 Bible verses, improved dark mode, smooth animations, and confetti celebrations!
-            
-            ## 📲 Installation Instructions
-            
-            1. Download the APK file below
-            2. Transfer to your Android phone
-            3. Open file manager and tap the APK file
-            4. Tap "Install" (enable "Unknown Sources" if prompted)
-            5. App opens - ready to use! 🎉
-            
-            ## ✨ Features
-            - ✅ Daily scripture with beautiful popup
-            - ✅ Improved dark mode for comfortable reading
-            - ✅ Smooth animations & transitions
-            - ✅ Confetti celebrations for milestones
-            - ✅ Full offline support
-            - ✅ Child check-in/check-out system
-            - ✅ Attendance tracking & reports
-            - ✅ Points and rewards system
+            **Church**: Agape Christian Centre, Louis Trichardt
+
+            ## Installation
+
+            1. Download the APK file below.
+            2. Transfer it to your Android phone.
+            3. Open the APK from your file manager.
+            4. Approve install from unknown sources if Android asks.
+            5. Open Agape Kids and connect your Apps Script URL if needed.
+
+            ## Included in this build
+
+            - Child registration, check-in, and check-out
+            - Attendance dashboards, reports, and exports
+            - Polls with results, sharing, and duplicate-vote protection by device
+            - Offline support and PWA installability
+            - Google Sheets and Apps Script sync
           draft: false
           prerelease: false
         env:

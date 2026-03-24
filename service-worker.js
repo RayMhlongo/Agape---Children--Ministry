@@ -1,13 +1,19 @@
-// Agape Kids - Service Worker v3
-const CACHE_NAME = 'agape-kids-v3';
+// Agape Kids - Service Worker v4
+const CACHE_NAME = 'agape-kids-v4';
 const OFFLINE_FALLBACK_URL = new URL("./index.html", self.location.href).toString();
+const PRECACHE_URLS = [
+  "./index.html",
+  "./manifest.json",
+  "./assets/agape-enhancements.css?v=20260324",
+  "./assets/agape-enhancements.js?v=20260324",
+  "./icons/icon-192x192.png",
+  "./icons/icon-512x512.png"
+];
 
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache =>
-      cache.addAll(['./index.html', './manifest.json']).catch(() => {})
-    )
+    caches.open(CACHE_NAME).then(cache => cache.addAll(PRECACHE_URLS).catch(() => {}))
   );
 });
 

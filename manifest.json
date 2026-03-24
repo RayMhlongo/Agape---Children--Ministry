@@ -1,11 +1,11 @@
 {
   "name": "Agape Kids",
   "short_name": "Agape Kids",
-  "description": "Children's church management — Agape Christian Centre, Louis Trichardt",
+  "description": "Children's church management for Agape Christian Centre in Louis Trichardt",
   "id": "./?app=agape-kids",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#5EA4D7",
+  "background_color": "#F7FBFF",
   "theme_color": "#1C6396",
   "orientation": "portrait",
   "scope": "./",
@@ -14,8 +14,8 @@
     "minimal-ui"
   ],
   "icons": [
-    { "src": "icons/icon-72x72.png",   "sizes": "72x72",   "type": "image/png", "purpose": "any maskable" },
-    { "src": "icons/icon-96x96.png",   "sizes": "96x96",   "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-72x72.png", "sizes": "72x72", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-96x96.png", "sizes": "96x96", "type": "image/png", "purpose": "any maskable" },
     { "src": "icons/icon-128x128.png", "sizes": "128x128", "type": "image/png", "purpose": "any maskable" },
     { "src": "icons/icon-144x144.png", "sizes": "144x144", "type": "image/png", "purpose": "any maskable" },
     { "src": "icons/icon-152x152.png", "sizes": "152x152", "type": "image/png", "purpose": "any maskable" },

@@ -16,6 +16,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/agape-enhancements.css?v=20260324">
 <style>
 :root {
   --blue:#5EA4D7; --blue-d:#1C6396; --blue-l:#A8D4EF; --blue-xl:#E8F4FC;
@@ -2204,13 +2205,7 @@ let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; });
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
-    const regs = await navigator.serviceWorker.getRegistrations();
-    for (let r of regs) await r.unregister();
-    if (window.caches && caches.keys) {
-      const keys = await caches.keys();
-      await Promise.all(keys.map(k => caches.delete(k)));
-    }
-    navigator.serviceWorker.register('./service-worker.js?v=3').catch(e => console.log(e));
+    navigator.serviceWorker.register('./service-worker.js?v=4').catch(e => console.log(e));
   });
 }
 window.addEventListener('online', () => { setSyncStatus('ok'); flushSyncQueue(); toast(T('Back online — syncing','Terug aanlyn — sinkroniseer'), 'ok'); });
@@ -2240,6 +2235,7 @@ setTimeout(() => {
   if (e && e.style.display !== 'none') { setLoadMsg('Ready!'); hideLoading(); }
 }, 6000);
 </script>
+<script src="assets/agape-enhancements.js?v=20260324"></script>
 </body>
 </html>
 
